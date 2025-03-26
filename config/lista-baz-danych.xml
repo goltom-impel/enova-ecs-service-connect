@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DatabaseCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MsSqlDatabase>
-    <Name>DB</Name>
+    <Name>db</Name>
     <Description />
     <Active>true</Active>
     <DifferentSecondaryDatabase>false</DifferentSecondaryDatabase>
     <DefaultDatabase>true</DefaultDatabase>
     <UpdateFeaturesLegacyMode>false</UpdateFeaturesLegacyMode>
     <OperatorName>operator</OperatorName>
-    <OperatorPassword>=8611E228A685E454199EB4D639AB97923C</OperatorPassword>
+    <OperatorPassword>op_password_enc</OperatorPassword>
     <WindowsAuthentication>false</WindowsAuthentication>
     <LicencesSelection>false</LicencesSelection>
     <IsOptimalization>true</IsOptimalization>
@@ -18,9 +18,9 @@
     <NonCollectedRows>50000</NonCollectedRows>
     <LockNotification>false</LockNotification>
     <Server>mssql_server_url,1433</Server>
-    <DatabaseName>DB_Name</DatabaseName>
+    <DatabaseName>db_name</DatabaseName>
     <User>sa</User>
-    <Password>=FE247AD7229584175488AD140597E38F5C</Password>
+    <Password>sa_password_enc</Password>
     <Trusted>false</Trusted>
     <SecondaryServer />
     <SecondaryDatabaseName />
