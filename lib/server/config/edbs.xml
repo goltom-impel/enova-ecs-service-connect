@@ -17,7 +17,7 @@
     <BatchSubTables>40</BatchSubTables>
     <NonCollectedRows>50000</NonCollectedRows>
     <LockNotification>false</LockNotification>
-    <Server>db_url,1433</Server>
+    <Server>db_server_url,1433</Server>
     <DatabaseName>DB_name</DatabaseName>
     <User>admin</User>
     <Password>admin_pass</Password>
