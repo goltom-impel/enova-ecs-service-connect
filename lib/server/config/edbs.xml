@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DatabaseCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MsSqlDatabase>
+    <Name>DB</Name>
+    <Description />
+    <Active>true</Active>
+    <DefaultDatabase>true</DefaultDatabase>
+    <DifferentSecondaryDatabase>false</DifferentSecondaryDatabase>
+    <UpdateFeaturesLegacyMode>false</UpdateFeaturesLegacyMode>
+    <OperatorName>op</OperatorName>
+    <OperatorPassword>op_pass</OperatorPassword>
+    <WindowsAuthentication>false</WindowsAuthentication>
+    <LicencesSelection>false</LicencesSelection>
+    <IsOptimalization>true</IsOptimalization>
+    <BatchLinks>100</BatchLinks>
+    <BatchFeatures>100</BatchFeatures>
+    <BatchSubTables>40</BatchSubTables>
+    <NonCollectedRows>50000</NonCollectedRows>
+    <LockNotification>false</LockNotification>
+    <Server>db_url,1433</Server>
+    <DatabaseName>DB_name</DatabaseName>
+    <User>admin</User>
+    <Password>admin_pass</Password>
+    <Trusted>false</Trusted>
+    <SecondaryServer />
+    <SecondaryDatabaseName />
+    <SecondaryUser />
+    <SecondaryTrusted>false</SecondaryTrusted>
+    <VirtualTeleKeySerial>00000000</VirtualTeleKeySerial>
+    <UseConnectionString>false</UseConnectionString>
+    <TrustServerCertificate>true</TrustServerCertificate>
+    <Timeout>15</Timeout>
+  </MsSqlDatabase>
+</DatabaseCollection>

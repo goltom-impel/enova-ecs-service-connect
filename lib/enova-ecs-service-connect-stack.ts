@@ -2,12 +2,13 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as servicediscovery from "aws-cdk-lib/aws-servicediscovery";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
+// import { Vpc } from "aws-cdk-lib/aws-ec2";
 import * as ecs from "aws-cdk-lib/aws-ecs";
 import * as ecs_patterns from "aws-cdk-lib/aws-ecs-patterns";
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
-import * as efs from 'aws-cdk-lib/aws-efs';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as fs from 'fs';
+import path = require('path');
+// import * as efs from 'aws-cdk-lib/aws-efs';
+// import * as iam from 'aws-cdk-lib/aws-iam';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class EnovaEcsServiceConnectStack extends cdk.Stack {
@@ -21,9 +22,12 @@ export class EnovaEcsServiceConnectStack extends cdk.Stack {
       ipAddresses: ec2.IpAddresses.cidr('172.30.0.0/16'),
     });
 
+    // set if use existing vpc
+    // const vpc = Vpc.fromLookup(this, "Vpc", { vpcId: "vpc-010fcfe819b87ffbc" });
+
     const ecsCluster = new ecs.Cluster(this, "EcsCluster", {
       vpc: vpc,
-      clusterName: "enova-ecs-cluster",
+      clusterName: "enova-cluster",
     });
 
     const dnsNamespace = new servicediscovery.PrivateDnsNamespace(
@@ -43,16 +47,13 @@ export class EnovaEcsServiceConnectStack extends cdk.Stack {
 
     // backend - deploy Soneta Server.Standard
 
-    const DBConfig = fs.readFileSync(`./config/lista-baz-danych.xml`, 'utf8');
-    const appEnvs = [{ name: "SONETA_DBCONFIG", value: DBConfig }]
+    const appPorts = [{ portMappingName: "enova-server", port: 22000 }];
 
-    const appPorts = [{ portMappingName: "enova-server", port: 22000 }]
-
-    const enovaServerTaskDefinition = this.buildTaskDefinition("enova-server", "soneta/server.standard:2412.4.6-alpine", appEnvs, appPorts);
+    const enovaServerTaskDefinition = this.buildTaskDefinition("enova-server", "server", appPorts);
 
     const enovaserverservice = new ecs.FargateService(this, "enova-server-service", {
       cluster: ecsCluster, 
-      desiredCount: 2, 
+      desiredCount: 1, 
       serviceName: "enova-server",
       taskDefinition: enovaServerTaskDefinition,
       serviceConnectConfiguration: {
@@ -68,18 +69,13 @@ export class EnovaEcsServiceConnectStack extends cdk.Stack {
 
     // frontend - deploy Soneta WebServer.Standard
 
-    const webEnvs = [
-      { name: "SONETA_SERVER_ENDPOINTS", value: 'http://enova-server:22000' },
-      { name: "SONETA_FRONTEND__SERVERENDPOINT", value: 'http://enova-server:22000' },
-      { name: "SONETA_URLS", value: 'http://+:8080' },
-    ]
-    const webPorts = [{ portMappingName: "enova-web", port: 8080 }]
+    const webPorts = [{ portMappingName: "enova-web", port: 8080 }];
         
-    const enovaWebTaskDefinition = this.buildTaskDefinition("enova-web", "soneta/web.standard:2412.4.6-alpine", webEnvs, webPorts);
+    const enovaWebTaskDefinition = this.buildTaskDefinition("enova-web", "web", webPorts);
 
     const enovawebservice = new ecs_patterns.ApplicationLoadBalancedFargateService(this, "enova-web-service", {
       cluster: ecsCluster, 
-      desiredCount: 2, 
+      desiredCount: 1, 
       publicLoadBalancer: true, 
       serviceName: "enova-web",
       taskDefinition: enovaWebTaskDefinition,
@@ -98,25 +94,22 @@ export class EnovaEcsServiceConnectStack extends cdk.Stack {
  
   }
 
-  buildTaskDefinition = (appName: string, dockerImage: string, environment: { name: string, value: string }[], portMappings: { portMappingName: string, port: number }[]) => {
-
-    const taskdef = new ecs.FargateTaskDefinition(this, `${appName}-taskdef`, {
+  buildTaskDefinition = (appName: string, dockerfile: string, portMappings: { portMappingName: string, port: number }[]) => {
+  
+      const taskdef = new ecs.FargateTaskDefinition(this, `${appName}-taskdef`, {
       memoryLimitMiB: 2048, 
-      cpu: 512, 
+      cpu: 512,
     });
 
     const container = taskdef.addContainer(`${appName}`, {
-      image: ecs.ContainerImage.fromRegistry(dockerImage),
+    //  image: ecs.ContainerImage.fromRegistry(dockerImage),
+      image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, dockerfile)),
       logging: ecs.LogDrivers.awsLogs({ 
         logGroup: this.logGroup,
         streamPrefix: `service`
       })
     });
 
-    environment.forEach(({ name, value }) =>
-      container.addEnvironment( name, value )
-    );
-   
     portMappings.forEach(({ port, portMappingName }) =>
       container.addPortMappings({ containerPort: port, name: portMappingName})
     );
