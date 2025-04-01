@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 soneta/server.standard:2412.4.6-alpine
+FROM soneta/server.standard:2504.0.0-alpine
 
-COPY /config /config
+COPY --chown=app:app ./config /config
 ENV SONETA_DBCONFIG=/config/edbs.xml

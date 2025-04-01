@@ -20,6 +20,7 @@ export class EnovaEcsServiceConnectStack extends cdk.Stack {
   
     const vpc = new ec2.Vpc(this, "Vpc", {
       ipAddresses: ec2.IpAddresses.cidr('172.30.0.0/16'),
+      maxAzs: 2,
     });
 
     // set if use existing vpc

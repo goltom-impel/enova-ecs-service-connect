@@ -1,4 +1,4 @@
-FROM soneta/web.standard:2412.4.6-alpine
+FROM soneta/web.standard:2504.0.0-alpine
 
 ENV SONETA_SERVER_ENDPOINTS=http://enova-server:22000
 ENV SONETA_FRONTEND__SERVERENDPOINT=http://enova-server:22000

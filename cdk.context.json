@@ -3,37 +3,5 @@
     "eu-central-1a",
     "eu-central-1b",
     "eu-central-1c"
-  ],
-  "vpc-provider:account=431003482339:filter.vpc-id=vpc-010fcfe819b87ffbc:region=eu-central-1:returnAsymmetricSubnets=true": {
-    "vpcId": "vpc-010fcfe819b87ffbc",
-    "vpcCidrBlock": "172.31.0.0/16",
-    "ownerAccountId": "431003482339",
-    "availabilityZones": [],
-    "subnetGroups": [
-      {
-        "name": "Public",
-        "type": "Public",
-        "subnets": [
-          {
-            "subnetId": "subnet-03f6505330e290050",
-            "cidr": "172.31.16.0/20",
-            "availabilityZone": "eu-central-1a",
-            "routeTableId": "rtb-071fe1ac48473c77e"
-          },
-          {
-            "subnetId": "subnet-0971dc519c4ad1e60",
-            "cidr": "172.31.32.0/20",
-            "availabilityZone": "eu-central-1b",
-            "routeTableId": "rtb-071fe1ac48473c77e"
-          },
-          {
-            "subnetId": "subnet-0dcddfed6ad555396",
-            "cidr": "172.31.0.0/20",
-            "availabilityZone": "eu-central-1c",
-            "routeTableId": "rtb-071fe1ac48473c77e"
-          }
-        ]
-      }
-    ]
-  }
+  ]
 }
