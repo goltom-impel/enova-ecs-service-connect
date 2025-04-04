@@ -2,14 +2,11 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as servicediscovery from "aws-cdk-lib/aws-servicediscovery";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
-// import { Vpc } from "aws-cdk-lib/aws-ec2";
+import { Vpc } from "aws-cdk-lib/aws-ec2";
 import * as ecs from "aws-cdk-lib/aws-ecs";
 import * as ecs_patterns from "aws-cdk-lib/aws-ecs-patterns";
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import path = require('path');
-// import * as efs from 'aws-cdk-lib/aws-efs';
-// import * as iam from 'aws-cdk-lib/aws-iam';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class EnovaEcsServiceConnectStack extends cdk.Stack {
 
@@ -18,13 +15,27 @@ export class EnovaEcsServiceConnectStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
   
-    const vpc = new ec2.Vpc(this, "Vpc", {
-      ipAddresses: ec2.IpAddresses.cidr('172.30.0.0/16'),
-      maxAzs: 2,
-    });
+    // Create a new Vpc without NAT Gateway
+  //  const vpc = new ec2.Vpc(this, "Vpc", {
+  //    ipAddresses: ec2.IpAddresses.cidr('172.30.0.0/16'),
+  //    maxAzs: 2,
+  //    natGateways: 0,
+  //    subnetConfiguration: [
+  //      {
+  //        name: 'public',
+  //        subnetType: ec2.SubnetType.PUBLIC,
+  //        cidrMask: 24
+  //      },
+  //      {
+  //        name: 'isolated',
+  //        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+  //        cidrMask: 24
+  //      }
+  //    ]
+  //  });
 
     // set if use existing vpc
-    // const vpc = Vpc.fromLookup(this, "Vpc", { vpcId: "vpc-010fcfe819b87ffbc" });
+    const vpc = Vpc.fromLookup(this, "Vpc", { vpcId: "vpc-xxxxxxxxxxxxxxx" });
 
     const ecsCluster = new ecs.Cluster(this, "EcsCluster", {
       vpc: vpc,
@@ -46,8 +57,32 @@ export class EnovaEcsServiceConnectStack extends cdk.Stack {
       retention: RetentionDays.ONE_WEEK
     });
 
-    // backend - deploy Soneta Server.Standard
+    // access ECR by endpoint
+    new ec2.InterfaceVpcEndpoint(this, 'ECRVpcEndpoint', {
+      vpc,
+      service: ec2.InterfaceVpcEndpointAwsService.ECR,
+      privateDnsEnabled: true
+    })
+    new ec2.InterfaceVpcEndpoint(this, 'ECRDockerVpcEndpoint', {
+      vpc,
+      service: ec2.InterfaceVpcEndpointAwsService.ECR_DOCKER,
+      privateDnsEnabled: true
+    })
+    new ec2.GatewayVpcEndpoint(this, 'S3GatewayEndpoint', {
+      service: ec2.GatewayVpcEndpointAwsService.S3,
+      vpc,
+      subnets: [{ subnetType: cdk.aws_ec2.SubnetType.PRIVATE_ISOLATED }]
+    })
 
+    // access Cloudwatch logging
+    new ec2.InterfaceVpcEndpoint(this, 'CloudWatchLogsVpcEndpoint', {
+      vpc,
+      service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
+      privateDnsEnabled: true
+    })
+
+
+    // backend - deploy Soneta Server.Standard
     const appPorts = [{ portMappingName: "enova-server", port: 22000 }];
 
     const enovaServerTaskDefinition = this.buildTaskDefinition("enova-server", "server", appPorts);
@@ -57,6 +92,9 @@ export class EnovaEcsServiceConnectStack extends cdk.Stack {
       desiredCount: 1, 
       serviceName: "enova-server",
       taskDefinition: enovaServerTaskDefinition,
+      vpcSubnets: {
+        subnetType: cdk.aws_ec2.SubnetType.PRIVATE_ISOLATED
+      },
       serviceConnectConfiguration: {
         services: appPorts.map(({ portMappingName, port }) => ({
           portMappingName,
@@ -69,7 +107,6 @@ export class EnovaEcsServiceConnectStack extends cdk.Stack {
     });
 
     // frontend - deploy Soneta WebServer.Standard
-
     const webPorts = [{ portMappingName: "enova-web", port: 8080 }];
         
     const enovaWebTaskDefinition = this.buildTaskDefinition("enova-web", "web", webPorts);

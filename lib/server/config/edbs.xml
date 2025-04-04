@@ -1,14 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <DatabaseCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MsSqlDatabase>
-    <Name>DB</Name>
+    <Name>Nova</Name>
     <Description />
     <Active>true</Active>
-    <DefaultDatabase>true</DefaultDatabase>
     <DifferentSecondaryDatabase>false</DifferentSecondaryDatabase>
+    <DefaultDatabase>true</DefaultDatabase>
     <UpdateFeaturesLegacyMode>false</UpdateFeaturesLegacyMode>
-    <OperatorName>op</OperatorName>
-    <OperatorPassword>op_pass</OperatorPassword>
+    <OperatorName>?</OperatorName>
     <WindowsAuthentication>false</WindowsAuthentication>
     <LicencesSelection>false</LicencesSelection>
     <IsOptimalization>true</IsOptimalization>
@@ -17,10 +16,10 @@
     <BatchSubTables>40</BatchSubTables>
     <NonCollectedRows>50000</NonCollectedRows>
     <LockNotification>false</LockNotification>
-    <Server>db.n4next.eu,1433</Server>
-    <DatabaseName>DB_name</DatabaseName>
+    <Server>enovadbstack-xxxxxxx-pbo4shppvryk.cdi0my686wr9.eu-central-1.rds.amazonaws.com,1433</Server>
+    <DatabaseName>NovaDB</DatabaseName>
     <User>admin</User>
-    <Password>admin_pass</Password>
+    <Password>xxxxxxxxxxxxxxx</Password>
     <Trusted>false</Trusted>
     <SecondaryServer />
     <SecondaryDatabaseName />
